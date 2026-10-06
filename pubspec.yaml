@@ -1,0 +1,46 @@
+name: caloout
+description: "CaloOut - Calorie Out, BMR and TDEE Tracker App"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
+
+  # State Management
+  flutter_riverpod: ^2.5.1
+
+  # Navigation
+  go_router: ^14.2.0
+
+  # Local Storage & Database
+  shared_preferences: ^2.2.3
+  drift: ^2.18.0
+  drift_flutter: ^0.1.0
+
+  # Charts
+  fl_chart: ^0.68.0
+
+  # Utilities
+  uuid: ^4.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  drift_dev: ^2.18.0
+  build_runner: ^2.4.9
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/data/met_activities.json

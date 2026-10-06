@@ -1,0 +1,226 @@
+{
+  "source": "2024 Adult Compendium of Physical Activities (Herrmann et al., Arizona State University)",
+  "version": "1.0",
+  "activities": [
+    {
+      "id": "walking_moderate",
+      "nameKey": "walking_moderate",
+      "nameVi": "Đi bộ vừa phải (4.8 km/h)",
+      "nameEn": "Walking, moderate (3.0 mph / 4.8 km/h)",
+      "category": "cardio",
+      "met": 3.5,
+      "icon": "directions_walk",
+      "compendiumCode": "17170"
+    },
+    {
+      "id": "walking_brisk",
+      "nameKey": "walking_brisk",
+      "nameVi": "Đi bộ nhanh (6.0 km/h)",
+      "nameEn": "Brisk walking (3.8 mph / 6.0 km/h)",
+      "category": "cardio",
+      "met": 5.0,
+      "icon": "directions_walk",
+      "compendiumCode": "17200"
+    },
+    {
+      "id": "running_slow",
+      "nameKey": "running_slow",
+      "nameVi": "Chạy bộ chậm (8.0 km/h / 5 mph)",
+      "nameEn": "Jogging / Running (5.0 mph / 8.0 km/h)",
+      "category": "cardio",
+      "met": 8.3,
+      "icon": "directions_run",
+      "compendiumCode": "12020"
+    },
+    {
+      "id": "running_fast",
+      "nameKey": "running_fast",
+      "nameVi": "Chạy bộ nhanh (10 km/h / 6 mph)",
+      "nameEn": "Running, vigorous (6.0 mph / 10 km/h)",
+      "category": "cardio",
+      "met": 9.8,
+      "icon": "directions_run",
+      "compendiumCode": "12030"
+    },
+    {
+      "id": "cycling_leisure",
+      "nameKey": "cycling_leisure",
+      "nameVi": "Đạp xe thong thả (15 km/h)",
+      "nameEn": "Cycling, leisurely (9.4 mph / 15 km/h)",
+      "category": "cardio",
+      "met": 5.8,
+      "icon": "directions_bike",
+      "compendiumCode": "01015"
+    },
+    {
+      "id": "cycling_vigorous",
+      "nameKey": "cycling_vigorous",
+      "nameVi": "Đạp xe cường độ cao (>20 km/h)",
+      "nameEn": "Cycling, vigorous (>12 mph / >20 km/h)",
+      "category": "cardio",
+      "met": 8.5,
+      "icon": "directions_bike",
+      "compendiumCode": "01020"
+    },
+    {
+      "id": "swimming_moderate",
+      "nameKey": "swimming_moderate",
+      "nameVi": "Bơi lội vừa phải",
+      "nameEn": "Swimming, moderate effort",
+      "category": "cardio",
+      "met": 5.8,
+      "icon": "pool",
+      "compendiumCode": "18310"
+    },
+    {
+      "id": "swimming_vigorous",
+      "nameKey": "swimming_vigorous",
+      "nameVi": "Bơi lội cường độ cao",
+      "nameEn": "Swimming, vigorous effort",
+      "category": "cardio",
+      "met": 9.8,
+      "icon": "pool",
+      "compendiumCode": "18300"
+    },
+    {
+      "id": "yoga_gentle",
+      "nameKey": "yoga_gentle",
+      "nameVi": "Yoga nhẹ nhàng (Hatha)",
+      "nameEn": "Yoga, gentle / Hatha",
+      "category": "flexibility",
+      "met": 2.5,
+      "icon": "self_improvement",
+      "compendiumCode": "02150"
+    },
+    {
+      "id": "yoga_power",
+      "nameKey": "yoga_power",
+      "nameVi": "Yoga nâng cao (Vinyasa / Power)",
+      "nameEn": "Power Yoga / Vinyasa",
+      "category": "flexibility",
+      "met": 4.0,
+      "icon": "self_improvement",
+      "compendiumCode": "02152"
+    },
+    {
+      "id": "weight_training_moderate",
+      "nameKey": "weight_training_moderate",
+      "nameVi": "Gym / Kháng lực vừa phải",
+      "nameEn": "Gym / Weight lifting, moderate",
+      "category": "strength",
+      "met": 3.5,
+      "icon": "fitness_center",
+      "compendiumCode": "02052"
+    },
+    {
+      "id": "weight_training_vigorous",
+      "nameKey": "weight_training_vigorous",
+      "nameVi": "Gym / Thể hình cường độ cao",
+      "nameEn": "Gym / Weight lifting, vigorous",
+      "category": "strength",
+      "met": 6.0,
+      "icon": "fitness_center",
+      "compendiumCode": "02054"
+    },
+    {
+      "id": "jump_rope_moderate",
+      "nameKey": "jump_rope_moderate",
+      "nameVi": "Nhảy dây tốc độ vừa",
+      "nameEn": "Jump rope, moderate pace",
+      "category": "cardio",
+      "met": 8.8,
+      "icon": "timer",
+      "compendiumCode": "15551"
+    },
+    {
+      "id": "jump_rope_fast",
+      "nameKey": "jump_rope_fast",
+      "nameVi": "Nhảy dây tốc độ cao",
+      "nameEn": "Jump rope, fast pace",
+      "category": "cardio",
+      "met": 11.8,
+      "icon": "timer",
+      "compendiumCode": "15552"
+    },
+    {
+      "id": "badminton",
+      "nameKey": "badminton",
+      "nameVi": "Cầu lông (phong trào)",
+      "nameEn": "Badminton, recreational",
+      "category": "sports",
+      "met": 5.5,
+      "icon": "sports_tennis",
+      "compendiumCode": "15050"
+    },
+    {
+      "id": "football",
+      "nameKey": "football",
+      "nameVi": "Bóng đá",
+      "nameEn": "Football / Soccer",
+      "category": "sports",
+      "met": 7.0,
+      "icon": "sports_soccer",
+      "compendiumCode": "15610"
+    },
+    {
+      "id": "hiit",
+      "nameKey": "hiit",
+      "nameVi": "HIIT / Calisthenics cường độ cao",
+      "nameEn": "HIIT / High Intensity Interval Training",
+      "category": "cardio",
+      "met": 8.0,
+      "icon": "flash_on",
+      "compendiumCode": "02040"
+    },
+    {
+      "id": "stair_climbing",
+      "nameKey": "stair_climbing",
+      "nameVi": "Leo cầu thang bộ",
+      "nameEn": "Stair climbing",
+      "category": "cardio",
+      "met": 8.8,
+      "icon": "stairs",
+      "compendiumCode": "17130"
+    },
+    {
+      "id": "housework",
+      "nameKey": "housework",
+      "nameVi": "Làm việc nhà (dọn dẹp, lau nhà)",
+      "nameEn": "Housework / General cleaning",
+      "category": "daily",
+      "met": 3.0,
+      "icon": "cleaning_services",
+      "compendiumCode": "05040"
+    },
+    {
+      "id": "aerobic_dancing",
+      "nameKey": "aerobic_dancing",
+      "nameVi": "Nhảy Aerobic / Zumba",
+      "nameEn": "Aerobic Dance / Zumba",
+      "category": "sports",
+      "met": 6.5,
+      "icon": "music_note",
+      "compendiumCode": "03015"
+    },
+    {
+      "id": "basketball",
+      "nameKey": "basketball",
+      "nameVi": "Bóng rổ",
+      "nameEn": "Basketball",
+      "category": "sports",
+      "met": 6.5,
+      "icon": "sports_basketball",
+      "compendiumCode": "15070"
+    },
+    {
+      "id": "tennis",
+      "nameKey": "tennis",
+      "nameVi": "Quần vợt (Tennis)",
+      "nameEn": "Tennis",
+      "category": "sports",
+      "met": 7.3,
+      "icon": "sports_tennis",
+      "compendiumCode": "15675"
+    }
+  ]
+}

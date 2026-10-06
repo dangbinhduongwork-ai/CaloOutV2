@@ -1,14 +1,17 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/calorie_formatter.dart';
-import '../../../core/utils/unit_converter.dart';
+import '../../../core/utils/date_formatter.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../activity/domain/entities/activity_entry.dart';
+import '../../activity/presentation/add_activity_screen.dart';
+import '../../activity/presentation/providers/activity_providers.dart';
 import '../../profile/presentation/providers/profile_provider.dart';
-import '../../settings/presentation/providers/unit_settings_provider.dart';
 
-/// Dashboard screen displaying current user metrics (BMR, TDEE, Daily Goal).
+/// Dashboard screen showing Today's Calorie Burn progress ring and activity logs.
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
@@ -16,14 +19,47 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final profileAsync = ref.watch(profileProvider);
-    final bmr = ref.watch(currentBmrProvider);
-    final tdee = ref.watch(currentTdeeProvider);
-    final dailyGoal = ref.watch(currentDailyGoalProvider);
-    final unitSettings = ref.watch(unitSettingsProvider);
+    final summary = ref.watch(todaySummaryProvider);
+    final dailyGoal = ref.watch(currentDailyGoalProvider) ?? 2000.0;
+    final entriesAsync = ref.watch(todayEntriesStreamProvider);
+    final today = ref.watch(todayDateProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.appTitle),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: AppColors.calorieOrange.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.local_fire_department, color: AppColors.calorieOrange, size: 20),
+            ),
+            const SizedBox(width: 8),
+            Text(l10n.appTitle),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text(
+                  DateFormatter.formatShortDate(today),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -38,258 +74,224 @@ class DashboardScreen extends ConsumerWidget {
             );
           }
 
+          final entries = entriesAsync.valueOrNull ?? [];
+          final progressRatio = dailyGoal > 0 ? (summary.totalKcal / dailyGoal).clamp(0.0, 1.5) : 0.0;
+          final percent = (progressRatio * 100).round();
+
           return ListView(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
             children: [
-              // Hero Calorie Target Card
-              Container(
-                padding: const EdgeInsets.all(24.0),
-                decoration: BoxDecoration(
-                  gradient: AppColors.heroCardGradient,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryDark.withOpacity(0.3),
-                      blurRadius: 16,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          l10n.dashboardGoal,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.18),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.flash_on, color: Colors.amber, size: 16),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${profile.activityLevel.multiplier}x',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+              // Calorie Progress Ring Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: 220,
+                        height: 220,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            TweenAnimationBuilder<double>(
+                              tween: Tween<double>(begin: 0.0, end: progressRatio),
+                              duration: const Duration(milliseconds: 1000),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, value, _) {
+                                return CustomPaint(
+                                  size: const Size(220, 220),
+                                  painter: _CalorieProgressPainter(
+                                    progress: value,
+                                    trackColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                    progressGradient: AppColors.calorieBurnGradient,
+                                  ),
+                                );
+                              },
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  l10n.dashboardTodayBurned,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                                 ),
-                              ),
-                            ],
-                          ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  CalorieFormatter.format(summary.totalKcal),
+                                  key: const Key('dashboard_total_burn_text'),
+                                  style: const TextStyle(
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                Text(
+                                  l10n.unitKcal,
+                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
+                                ),
+                                const SizedBox(height: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: (percent >= 100 ? AppColors.primary : AppColors.calorieOrange)
+                                        .withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    '$percent%',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: percent >= 100 ? AppColors.primaryDark : AppColors.calorieOrangeDark,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          dailyGoal != null ? CalorieFormatter.format(dailyGoal) : '--',
-                          key: const Key('dashboard_goal_text'),
-                          style: const TextStyle(
-                            fontSize: 38,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          l10n.unitKcal,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.tagline,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      Text(
+                        '${CalorieFormatter.format(summary.totalKcal)} / ${CalorieFormatter.format(dailyGoal)} ${l10n.unitKcal}',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                            ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // BMR & TDEE side-by-side cards
+              // Two Breakdown Metric Tiles (BMR + Activity)
               Row(
                 children: [
                   Expanded(
-                    child: _buildMetricTile(
+                    child: _buildBreakdownCard(
                       context: context,
                       icon: Icons.bedtime_outlined,
-                      iconColor: AppColors.primary,
-                      title: l10n.bmrTitle,
-                      value: bmr != null ? CalorieFormatter.format(bmr) : '--',
-                      valueKey: const Key('dashboard_bmr_text'),
+                      color: AppColors.primary,
+                      title: l10n.dashboardBmrPortion,
+                      value: CalorieFormatter.format(summary.bmr),
                       unit: l10n.unitKcal,
-                      subtitle: l10n.dashboardBmrPortion,
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: _buildMetricTile(
+                    child: _buildBreakdownCard(
                       context: context,
-                      icon: Icons.local_fire_department,
-                      iconColor: AppColors.calorieOrange,
-                      title: l10n.tdeeTitle,
-                      value: tdee != null ? CalorieFormatter.format(tdee) : '--',
-                      valueKey: const Key('dashboard_tdee_text'),
+                      icon: Icons.directions_run,
+                      color: AppColors.calorieOrange,
+                      title: l10n.dashboardActivePortion,
+                      value: CalorieFormatter.format(summary.activityKcal),
                       unit: l10n.unitKcal,
-                      subtitle: l10n.tdeeDescription,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-
-              // User Profile Info Summary Card
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n.navProfile,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          TextButton(
-                            onPressed: () => context.go('/profile'),
-                            child: Text(l10n.edit),
-                          ),
-                        ],
-                      ),
-                      const Divider(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildProfileStat(
-                            label: l10n.gender,
-                            value: profile.gender.isMale ? l10n.male : l10n.female,
-                          ),
-                          _buildProfileStat(
-                            label: l10n.age,
-                            value: '${profile.age} ${l10n.ageUnit}',
-                          ),
-                          _buildProfileStat(
-                            label: l10n.height,
-                            value: UnitConverter.formatHeight(
-                              profile.heightCm,
-                              isImperial: unitSettings.heightUnit.isImperial,
-                            ),
-                          ),
-                          _buildProfileStat(
-                            label: l10n.weight,
-                            value: UnitConverter.formatWeight(
-                              profile.weightKg,
-                              isImperial: unitSettings.weightUnit.isImperial,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
               const SizedBox(height: 24),
 
-              // Activity Log Placeholder banner
-              Card(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.fitness_center_outlined, size: 36, color: Colors.grey),
-                      const SizedBox(height: 10),
-                      Text(
-                        l10n.dashboardNoActivities,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                      ),
-                    ],
+              // Activity Log Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${l10n.dashboardActivitiesLogged} (${entries.length})',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                ),
+                  if (entries.isNotEmpty)
+                    TextButton.icon(
+                      icon: const Icon(Icons.add, size: 18),
+                      label: Text(l10n.dashboardAddActivity),
+                      onPressed: () => _openAddActivity(context),
+                    ),
+                ],
               ),
+              const SizedBox(height: 8),
+
+              // Today's Activity List or Friendly Empty State
+              if (entries.isEmpty)
+                _buildEmptyStateCard(context, l10n)
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: entries.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final entry = entries[index];
+                    return _buildDismissibleActivityTile(context, entry, l10n, ref);
+                  },
+                ),
+              const SizedBox(height: 70), // Bottom padding for FAB
             ],
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
+        key: const Key('dashboard_add_activity_fab'),
         tooltip: l10n.dashboardAddActivity,
-        onPressed: () => context.push('/activity/add'),
+        onPressed: () => _openAddActivity(context),
         child: const Icon(Icons.add, size: 28),
       ),
     );
   }
 
-  Widget _buildMetricTile({
+  void _openAddActivity(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const AddActivityScreen(),
+      ),
+    );
+  }
+
+  Widget _buildBreakdownCard({
     required BuildContext context,
     required IconData icon,
-    required Color iconColor,
+    required Color color,
     required String title,
     required String value,
-    required Key valueKey,
     required String unit,
-    required String subtitle,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.08),
+        color: color.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: iconColor.withOpacity(0.25)),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: iconColor),
+              Icon(icon, color: color, size: 18),
               const SizedBox(width: 6),
-              Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
                 value,
-                key: valueKey,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: iconColor,
+                  color: color,
                 ),
               ),
               const SizedBox(width: 4),
@@ -299,34 +301,183 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildProfileStat({
-    required String label,
-    required String value,
-  }) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
+  Widget _buildEmptyStateCard(BuildContext context, AppLocalizations l10n) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 20.0),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.directions_run, size: 40, color: AppColors.primary),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              l10n.dashboardNoActivities,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add, size: 18),
+              label: Text(l10n.dashboardAddActivity),
+              onPressed: () => _openAddActivity(context),
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        ),
-      ],
+      ),
     );
+  }
+
+  Widget _buildDismissibleActivityTile(
+    BuildContext context,
+    ActivityEntry entry,
+    AppLocalizations l10n,
+    WidgetRef ref,
+  ) {
+    return Dismissible(
+      key: Key('activity_entry_${entry.id}'),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Icon(Icons.delete, color: Colors.white),
+            SizedBox(width: 6),
+            Text(
+              'Xóa',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+      onDismissed: (_) async {
+        final repo = ref.read(activityLogRepositoryProvider);
+        await repo.deleteEntry(entry.id);
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Đã xóa ${entry.displayName}'),
+              action: SnackBarAction(
+                label: 'Hoàn tác',
+                onPressed: () async {
+                  await repo.addEntry(entry);
+                },
+              ),
+            ),
+          );
+        }
+      },
+      child: Card(
+        child: ListTile(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => AddActivityScreen(entryToEdit: entry),
+              ),
+            );
+          },
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.calorieOrange.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.fitness_center, color: AppColors.calorieOrange, size: 22),
+          ),
+          title: Text(
+            entry.displayName,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          subtitle: Text(
+            '${entry.durationMinutes} ${l10n.unitMinutes} • ${DateFormatter.formatTime(entry.performedAt)}',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '+${CalorieFormatter.format(entry.caloriesBurned)}',
+                style: const TextStyle(
+                  color: AppColors.calorieOrangeDark,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                l10n.unitKcal,
+                style: const TextStyle(fontSize: 11, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// CustomPainter for the smooth Calorie Progress Ring
+class _CalorieProgressPainter extends CustomPainter {
+  const _CalorieProgressPainter({
+    required this.progress,
+    required this.trackColor,
+    required this.progressGradient,
+  });
+
+  final double progress;
+  final Color trackColor;
+  final Gradient progressGradient;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const strokeWidth = 16.0;
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width - strokeWidth) / 2;
+
+    // Track Paint
+    final trackPaint = Paint()
+      ..color = trackColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+    canvas.drawCircle(center, radius, trackPaint);
+
+    if (progress <= 0) return;
+
+    // Progress Paint with Gradient Shader
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    final progressPaint = Paint()
+      ..shader = progressGradient.createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    final startAngle = -math.pi / 2;
+    final sweepAngle = (2 * math.pi) * progress.clamp(0.0, 1.0);
+
+    canvas.drawArc(rect, startAngle, sweepAngle, false, progressPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CalorieProgressPainter oldDelegate) {
+    return oldDelegate.progress != progress || oldDelegate.trackColor != trackColor;
   }
 }

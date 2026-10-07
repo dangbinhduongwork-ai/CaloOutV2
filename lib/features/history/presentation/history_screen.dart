@@ -94,7 +94,7 @@ class HistoryScreen extends ConsumerWidget {
                       IconButton(
                         key: const Key('history_prev_button'),
                         icon: const Icon(Icons.chevron_left),
-                        tooltip: 'Khoảng trước',
+                        tooltip: l10n.historyPreviousPeriod,
                         onPressed: nav.goToPrevious,
                       ),
                       InkWell(
@@ -112,7 +112,7 @@ class HistoryScreen extends ConsumerWidget {
                       IconButton(
                         key: const Key('history_next_button'),
                         icon: const Icon(Icons.chevron_right),
-                        tooltip: 'Khoảng sau',
+                        tooltip: l10n.historyNextPeriod,
                         onPressed: canGoNext ? nav.goToNext : null,
                       ),
                     ],
@@ -148,7 +148,7 @@ class HistoryScreen extends ConsumerWidget {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Calo tiêu hao mỗi ngày',
+                                      l10n.historyDailyBurnTitle,
                                       style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                     // Legend
@@ -175,7 +175,7 @@ class HistoryScreen extends ConsumerWidget {
 
                       // Day Details List (Single day or breakdown of selected period)
                       Text(
-                        'Chi tiết theo ngày (chạm để xem)',
+                        l10n.historyDayDetailsTitle,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -225,7 +225,7 @@ class HistoryScreen extends ConsumerWidget {
         Expanded(
           child: _buildStatTile(
             context: context,
-            title: 'Cao nhất',
+            title: l10n.historyHighestDay,
             value: summary.highestDay != null ? CalorieFormatter.format(summary.highestDay!.totalKcal) : '--',
             unit: l10n.unitKcal,
             color: Colors.purple,
@@ -291,7 +291,7 @@ class HistoryScreen extends ConsumerWidget {
   ) {
     final records = summary.dailyRecords;
     if (records.isEmpty) {
-      return const Center(child: Text('Không có dữ liệu'));
+      return Center(child: Text(AppLocalizations.of(context).historyNoData));
     }
 
     // Determine max Y for nice scaling
@@ -476,8 +476,8 @@ class HistoryScreen extends ConsumerWidget {
         ),
         subtitle: Text(
           record.hasActivities
-              ? '${record.entries.length} hoạt động • ${record.activeMinutes} phút'
-              : 'Chỉ có BMR (nghỉ ngơi)',
+              ? l10n.historyActivitiesCountAndMinutes(record.entries.length, record.activeMinutes)
+              : l10n.historyBmrOnly,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
         ),
         trailing: Column(
@@ -593,28 +593,28 @@ class _DayDetailSheet extends ConsumerWidget {
             children: [
               Chip(
                 avatar: const Icon(Icons.bedtime_outlined, size: 16, color: AppColors.primary),
-                label: Text('BMR: ${CalorieFormatter.format(record.bmr)} kcal'),
+                label: Text('${l10n.dashboardBmrPortion}: ${CalorieFormatter.format(record.bmr)} ${l10n.unitKcal}'),
                 backgroundColor: AppColors.primary.withOpacity(0.08),
               ),
               const SizedBox(width: 8),
               Chip(
                 avatar: const Icon(Icons.directions_run, size: 16, color: AppColors.calorieOrange),
-                label: Text('Vận động: ${CalorieFormatter.format(record.activityKcal)} kcal'),
+                label: Text('${l10n.dashboardActivePortion}: ${CalorieFormatter.format(record.activityKcal)} ${l10n.unitKcal}'),
                 backgroundColor: AppColors.calorieOrange.withOpacity(0.08),
               ),
             ],
           ),
           const Divider(height: 24),
           Text(
-            'Các hoạt động đã ghi (${record.entries.length})',
+            l10n.historyActivitiesLoggedCount(record.entries.length),
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 10),
           if (record.entries.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0),
               child: Center(
-                child: Text('Không có bài tập nào được ghi trong ngày này.', style: TextStyle(color: Colors.grey)),
+                child: Text(l10n.historyNoActivitiesOnDay, style: const TextStyle(color: Colors.grey)),
               ),
             )
           else

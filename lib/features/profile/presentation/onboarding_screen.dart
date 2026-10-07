@@ -15,9 +15,11 @@ import '../domain/services/tdee_calculator.dart';
 import '../domain/validators/profile_validator.dart';
 import 'providers/profile_provider.dart';
 
-/// Interactive 4-step onboarding flow for new users.
+/// Interactive 4-step onboarding flow for new users, or profile editor for existing users.
 class OnboardingScreen extends ConsumerStatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({this.isEditing = false, super.key});
+
+  final bool isEditing;
 
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -52,6 +54,34 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
+
+    final existing = ref.read(profileProvider).valueOrNull;
+    if (widget.isEditing && existing != null) {
+      _gender = existing.gender;
+      _ageController.text = existing.age.toString();
+      _activityLevel = existing.activityLevel;
+      _goalController.text = existing.dailyGoalKcal.toStringAsFixed(0);
+      _isCustomGoal = true;
+
+      final unitSettings = ref.read(unitSettingsProvider);
+      _weightUnit = unitSettings.weightUnit;
+      _heightUnit = unitSettings.heightUnit;
+
+      if (_weightUnit == WeightUnit.lb) {
+        _weightController.text = UnitConverter.kgToLb(existing.weightKg).toStringAsFixed(1);
+      } else {
+        _weightController.text = existing.weightKg.toStringAsFixed(1);
+      }
+
+      if (_heightUnit == HeightUnit.ftIn) {
+        final ftIn = UnitConverter.cmToFtIn(existing.heightCm);
+        _heightFtController.text = ftIn.feet.toString();
+        _heightInController.text = ftIn.inches.toStringAsFixed(0);
+      } else {
+        _heightController.text = existing.heightCm.toStringAsFixed(0);
+      }
+    }
+
     // Validate initial values
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateStep1();
@@ -225,8 +255,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           UnitSettings(weightUnit: _weightUnit, heightUnit: _heightUnit),
         );
 
-    // Save profile -> will trigger GoRouter redirect to /dashboard
+    // Save profile -> will trigger GoRouter redirect to /dashboard if onboarding
     await ref.read(profileProvider.notifier).saveProfile(profile);
+
+    if (widget.isEditing && mounted) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileUpdatedSuccess)),
+      );
+    }
   }
 
   @override
@@ -235,13 +272,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.onboardingTitle),
+        title: Text(widget.isEditing ? l10n.settingsProfile : l10n.onboardingTitle),
         leading: _currentPage > 0
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: _previousPage,
               )
-            : null,
+            : (widget.isEditing
+                ? IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                : null),
       ),
       body: SafeArea(
         child: Column(
@@ -294,7 +336,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   key: const Key('onboarding_action_button'),
                   onPressed: _currentPage == 3 ? _onFinish : _nextPage,
                   child: Text(
-                    _currentPage == 3 ? l10n.finishOnboarding : l10n.nextStep,
+                    _currentPage == 3
+                        ? (widget.isEditing ? l10n.save : l10n.finishOnboarding)
+                        : l10n.nextStep,
                   ),
                 ),
               ),

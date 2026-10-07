@@ -43,27 +43,36 @@ final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((r
   return ThemeModeNotifier(prefs);
 });
 
-/// StateNotifier for App Locale (vi, en).
-class LocaleNotifier extends StateNotifier<Locale> {
+/// StateNotifier for App Locale (vi, en, or system default).
+class LocaleNotifier extends StateNotifier<Locale?> {
   LocaleNotifier(this._prefs) : super(_loadInitialLocale(_prefs));
 
   final SharedPreferences _prefs;
 
-  static Locale _loadInitialLocale(SharedPreferences prefs) {
+  static Locale? _loadInitialLocale(SharedPreferences prefs) {
     final saved = prefs.getString(AppConstants.keyLocale);
     if (saved == 'en') {
       return const Locale('en');
+    } else if (saved == 'system') {
+      return null;
+    } else if (saved == 'vi') {
+      return const Locale('vi');
     }
-    return const Locale('vi'); // Default is Vietnamese as per requirement
+    // Default is Vietnamese as per requirement
+    return const Locale('vi');
   }
 
-  Future<void> setLocale(Locale locale) async {
+  Future<void> setLocale(Locale? locale) async {
     state = locale;
-    await _prefs.setString(AppConstants.keyLocale, locale.languageCode);
+    if (locale == null) {
+      await _prefs.setString(AppConstants.keyLocale, 'system');
+    } else {
+      await _prefs.setString(AppConstants.keyLocale, locale.languageCode);
+    }
   }
 }
 
-final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
+final localeProvider = StateNotifierProvider<LocaleNotifier, Locale?>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return LocaleNotifier(prefs);
 });

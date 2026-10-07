@@ -121,8 +121,9 @@ class _AddActivityScreenState extends ConsumerState<AddActivityScreen>
       if (!nameRes.isValid || !metRes.isValid) isValid = false;
     } else {
       if (_selectedActivity == null) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Vui lòng chọn một hoạt động từ danh sách')),
+          SnackBar(content: Text(l10n.selectActivityPlease)),
         );
         isValid = false;
       }
@@ -544,7 +545,7 @@ class _AddActivityScreenState extends ConsumerState<AddActivityScreen>
             contentPadding: EdgeInsets.zero,
             value: _saveCustomForFuture,
             onChanged: (val) => setState(() => _saveCustomForFuture = val ?? true),
-            title: const Text('Lưu vào danh sách để dùng lại lần sau'),
+            title: Text(l10n.saveToCustomTemplate),
             controlAffinity: ListTileControlAffinity.leading,
           ),
         ],

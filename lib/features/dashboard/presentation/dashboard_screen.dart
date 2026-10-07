@@ -354,14 +354,14 @@ class DashboardScreen extends ConsumerWidget {
           color: Colors.red,
           borderRadius: BorderRadius.circular(14),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Icon(Icons.delete, color: Colors.white),
-            SizedBox(width: 6),
+            const Icon(Icons.delete, color: Colors.white),
+            const SizedBox(width: 6),
             Text(
-              'Xóa',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              l10n.delete,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -374,9 +374,9 @@ class DashboardScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Đã xóa ${entry.displayName}'),
+              content: Text(l10n.activityDeletedSnackbar(entry.displayName)),
               action: SnackBarAction(
-                label: 'Hoàn tác',
+                label: l10n.undo,
                 onPressed: () async {
                   await repo.addEntry(entry);
                 },

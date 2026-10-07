@@ -59,6 +59,7 @@ abstract class AppLocalizations {
   String get edit;
   String get confirm;
   String get close;
+  String get undo;
 
   // Profile & Units
   String get gender;
@@ -164,6 +165,37 @@ abstract class AppLocalizations {
   String get settingsClearData;
   String get settingsClearDataConfirm;
   String get settingsDataClearedSuccess;
+
+  // Additional Keys
+  String get profileUpdatedSuccess;
+  String get historyHighestDay;
+  String get historyDailyBurnTitle;
+  String get historyDayDetailsTitle;
+  String get historyBmrOnly;
+  String historyActivitiesCountAndMinutes(int count, int minutes);
+  String historyActivitiesLoggedCount(int count);
+  String get historyNoActivitiesOnDay;
+  String get historyPreviousPeriod;
+  String get historyNextPeriod;
+  String get selectActivityPlease;
+  String get saveToCustomTemplate;
+  String activityDeletedSnackbar(String name);
+  String get aboutTitle;
+  String get aboutVersion;
+  String get aboutFormulas;
+  String get aboutFormulaBmrDesc;
+  String get aboutFormulaTdeeDesc;
+  String get aboutFormulaActivityDesc;
+  String get aboutFormulaTotalDesc;
+  String get aboutDataSource;
+  String get aboutDataSourceDesc;
+  String get aboutMedicalDisclaimer;
+  String get aboutMedicalDisclaimerDesc;
+  String get languageSystem;
+  String get languageVietnamese;
+  String get languageEnglish;
+  String get emptyStateNoActivities;
+  String get errorGeneric;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -246,6 +278,8 @@ class _AppLocalizationsVi extends AppLocalizations {
   String get confirm => 'Xác nhận';
   @override
   String get close => 'Đóng';
+  @override
+  String get undo => 'Hoàn tác';
 
   @override
   String get gender => 'Giới tính';
@@ -433,6 +467,65 @@ class _AppLocalizationsVi extends AppLocalizations {
   String get settingsClearDataConfirm => 'CẢNH BÁO: Toàn bộ lịch sử hoạt động và hồ sơ cá nhân sẽ bị xóa vĩnh viễn. Bạn có chắc chắn không?';
   @override
   String get settingsDataClearedSuccess => 'Đã xóa toàn bộ dữ liệu thành công';
+
+  @override
+  String get profileUpdatedSuccess => 'Cập nhật hồ sơ thành công';
+  @override
+  String get historyHighestDay => 'Ngày cao nhất';
+  @override
+  String get historyDailyBurnTitle => 'Calo tiêu hao mỗi ngày';
+  @override
+  String get historyDayDetailsTitle => 'Chi tiết theo ngày (chạm để xem)';
+  @override
+  String get historyBmrOnly => 'Chỉ có BMR (nghỉ ngơi)';
+  @override
+  String historyActivitiesCountAndMinutes(int count, int minutes) => '$count hoạt động • $minutes phút';
+  @override
+  String historyActivitiesLoggedCount(int count) => 'Các hoạt động đã ghi ($count)';
+  @override
+  String get historyNoActivitiesOnDay => 'Không có bài tập nào được ghi trong ngày này.';
+  @override
+  String get historyPreviousPeriod => 'Khoảng trước';
+  @override
+  String get historyNextPeriod => 'Khoảng sau';
+  @override
+  String get selectActivityPlease => 'Vui lòng chọn một hoạt động từ danh sách';
+  @override
+  String get saveToCustomTemplate => 'Lưu vào danh sách để dùng lại lần sau';
+  @override
+  String activityDeletedSnackbar(String name) => 'Đã xóa $name';
+  @override
+  String get aboutTitle => 'Giới thiệu ứng dụng';
+  @override
+  String get aboutVersion => 'Phiên bản';
+  @override
+  String get aboutFormulas => 'Công thức tính toán';
+  @override
+  String get aboutFormulaBmrDesc => 'BMR tính theo phương trình Mifflin-St Jeor (1990) dựa trên giới tính sinh học, tuổi, chiều cao và cân nặng.';
+  @override
+  String get aboutFormulaTdeeDesc => 'TDEE ước lượng bằng BMR nhân với hệ số vận động thông thường (1.2 đến 1.9).';
+  @override
+  String get aboutFormulaActivityDesc => 'Calo vận động = MET × Cân nặng(kg) × Thời gian(giờ).';
+  @override
+  String get aboutFormulaTotalDesc => 'Tổng calo tiêu hao hàng ngày = BMR + Calo các hoạt động đã log (tránh tính trùng hệ số).';
+  @override
+  String get aboutDataSource => 'Nguồn dữ liệu MET';
+  @override
+  String get aboutDataSourceDesc => 'Compendium of Physical Activities (Ainsworth et al., Đại học South Carolina / Stanford).';
+  @override
+  String get aboutMedicalDisclaimer => 'Lưu ý y tế';
+  @override
+  String get aboutMedicalDisclaimerDesc => 'CaloOut cung cấp số liệu ước lượng dựa trên các nghiên cứu khoa học phổ biến. Ứng dụng không thay thế tư vấn y khoa, chẩn đoán hoặc phác đồ điều trị của bác sĩ và chuyên gia dinh dưỡng.';
+  @override
+  String get languageSystem => 'Theo hệ thống';
+  @override
+  String get languageVietnamese => 'Tiếng Việt';
+  @override
+  String get languageEnglish => 'English';
+  @override
+  String get emptyStateNoActivities => 'Chưa có hoạt động nào được ghi.';
+  @override
+  String get errorGeneric => 'Đã có lỗi xảy ra';
 }
 
 class _AppLocalizationsEn extends AppLocalizations {
@@ -494,6 +587,8 @@ class _AppLocalizationsEn extends AppLocalizations {
   String get confirm => 'Confirm';
   @override
   String get close => 'Close';
+  @override
+  String get undo => 'Undo';
 
   @override
   String get gender => 'Gender';
@@ -681,4 +776,63 @@ class _AppLocalizationsEn extends AppLocalizations {
   String get settingsClearDataConfirm => 'WARNING: All activity logs and user profile will be permanently deleted. Are you sure?';
   @override
   String get settingsDataClearedSuccess => 'All data has been successfully cleared';
+
+  @override
+  String get profileUpdatedSuccess => 'Profile updated successfully';
+  @override
+  String get historyHighestDay => 'Highest Day';
+  @override
+  String get historyDailyBurnTitle => 'Daily Calories Burned';
+  @override
+  String get historyDayDetailsTitle => 'Daily Breakdown (tap to view)';
+  @override
+  String get historyBmrOnly => 'BMR only (resting)';
+  @override
+  String historyActivitiesCountAndMinutes(int count, int minutes) => '$count activities • $minutes mins';
+  @override
+  String historyActivitiesLoggedCount(int count) => 'Logged activities ($count)';
+  @override
+  String get historyNoActivitiesOnDay => 'No workouts recorded for this day.';
+  @override
+  String get historyPreviousPeriod => 'Previous period';
+  @override
+  String get historyNextPeriod => 'Next period';
+  @override
+  String get selectActivityPlease => 'Please select an activity from the list';
+  @override
+  String get saveToCustomTemplate => 'Save template for future reuse';
+  @override
+  String activityDeletedSnackbar(String name) => 'Deleted $name';
+  @override
+  String get aboutTitle => 'About Application';
+  @override
+  String get aboutVersion => 'Version';
+  @override
+  String get aboutFormulas => 'Formulas Used';
+  @override
+  String get aboutFormulaBmrDesc => 'BMR is calculated using the Mifflin-St Jeor equation (1990) based on biological sex, age, height, and weight.';
+  @override
+  String get aboutFormulaTdeeDesc => 'TDEE is estimated by multiplying BMR with the daily activity multiplier (1.2 to 1.9).';
+  @override
+  String get aboutFormulaActivityDesc => 'Activity Burn = MET × Weight(kg) × Duration(hours).';
+  @override
+  String get aboutFormulaTotalDesc => 'Daily total burn = BMR + Logged activity calories (avoids double counting).';
+  @override
+  String get aboutDataSource => 'MET Data Source';
+  @override
+  String get aboutDataSourceDesc => 'Compendium of Physical Activities (Ainsworth et al., University of South Carolina / Stanford).';
+  @override
+  String get aboutMedicalDisclaimer => 'Medical Disclaimer';
+  @override
+  String get aboutMedicalDisclaimerDesc => 'CaloOut provides estimates based on standard scientific research. It is not intended as a substitute for professional medical advice, diagnosis, or nutritional prescription.';
+  @override
+  String get languageSystem => 'System Default';
+  @override
+  String get languageVietnamese => 'Tiếng Việt';
+  @override
+  String get languageEnglish => 'English';
+  @override
+  String get emptyStateNoActivities => 'No activities recorded yet.';
+  @override
+  String get errorGeneric => 'An error occurred';
 }

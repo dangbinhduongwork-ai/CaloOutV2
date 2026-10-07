@@ -160,6 +160,7 @@ class ActivityLogRepositoryImpl implements ActivityLogRepository {
   @override
   Future<void> clearAllLogs() async {
     await _db.delete(_db.activityLogs).go();
+    await _db.delete(_db.customActivities).go();
   }
 
   Future<List<ActivityEntry>> _mapRowsToEntries(List<ActivityLog> rows) async {

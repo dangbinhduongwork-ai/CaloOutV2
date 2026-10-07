@@ -6,6 +6,7 @@ import '../../../core/utils/calorie_formatter.dart';
 import '../../../core/utils/unit_converter.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../settings/presentation/providers/unit_settings_provider.dart';
+import 'onboarding_screen.dart';
 import 'providers/profile_provider.dart';
 
 /// Profile screen displaying user information, calculations, and formulas.
@@ -23,6 +24,19 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.navProfile),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: l10n.settingsProfile,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const OnboardingScreen(isEditing: true),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

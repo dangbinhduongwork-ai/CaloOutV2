@@ -589,18 +589,19 @@ class _DayDetailSheet extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           // BMR & Active chips
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
               Chip(
                 avatar: const Icon(Icons.bedtime_outlined, size: 16, color: AppColors.primary),
                 label: Text('${l10n.dashboardBmrPortion}: ${CalorieFormatter.format(record.bmr)} ${l10n.unitKcal}'),
-                backgroundColor: AppColors.primary.withOpacity(0.08),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.08),
               ),
-              const SizedBox(width: 8),
               Chip(
                 avatar: const Icon(Icons.directions_run, size: 16, color: AppColors.calorieOrange),
                 label: Text('${l10n.dashboardActivePortion}: ${CalorieFormatter.format(record.activityKcal)} ${l10n.unitKcal}'),
-                backgroundColor: AppColors.calorieOrange.withOpacity(0.08),
+                backgroundColor: AppColors.calorieOrange.withValues(alpha: 0.08),
               ),
             ],
           ),

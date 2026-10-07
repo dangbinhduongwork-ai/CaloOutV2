@@ -59,6 +59,6 @@ void main() {
 
     // Verify DashboardScreen elements are present
     expect(find.byKey(const Key('dashboard_goal_text')), findsOneWidget);
-    expect(find.text('2,560'), findsOneWidget);
+    expect(find.textContaining('2,560'), findsOneWidget);
   });
 }

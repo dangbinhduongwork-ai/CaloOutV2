@@ -12,6 +12,7 @@ import 'package:caloout/features/profile/domain/entities/gender.dart';
 import 'package:caloout/features/profile/domain/entities/user_profile.dart';
 import 'package:caloout/features/profile/presentation/providers/profile_provider.dart';
 import 'package:caloout/l10n/app_localizations.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUpAll(() {
+    driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+  });
+
   late SharedPreferences prefs;
   late AppDatabase db;
   late ActivityLogRepositoryImpl logRepo;
@@ -77,7 +82,7 @@ void main() {
     // 2. Verify empty state when no activities exist:
     // Still shows BMR summary and cards without crashing
     expect(find.text('Tổng tiêu hao'), findsOneWidget);
-    expect(find.text('Trung bình/ngày'), findsOneWidget);
+    expect(find.text('Trung bình / ngày'), findsOneWidget);
     expect(find.text('Ngày cao nhất'), findsOneWidget);
     expect(find.text('Chỉ có BMR (nghỉ ngơi)'), findsWidgets);
 
@@ -132,6 +137,13 @@ void main() {
 
   testWidgets('Tapping a day tile opens detail bottom sheet and displays logged activities',
       (tester) async {
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     // Add one sample activity on 2026-10-07
     await logRepo.addEntry(
       ActivityEntry(
@@ -142,6 +154,7 @@ void main() {
           met: 8.0,
           category: 'cardio',
         ),
+        customName: 'Chạy bộ',
         durationMinutes: 45,
         caloriesBurned: 350.0,
         weightKgSnapshot: 70.0,

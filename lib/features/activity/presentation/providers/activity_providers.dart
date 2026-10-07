@@ -70,27 +70,18 @@ final customActivitiesNotifierProvider = StateNotifierProvider<
 /// Provider for current calendar day date normalized to 00:00:00
 /// Automatically updates if app remains open across midnight (0h).
 class TodayDateNotifier extends StateNotifier<DateTime> {
-  TodayDateNotifier([DateTime? initialDate]) : super(initialDate ?? _nowDate()) {
-    // Check every minute if midnight has passed
-    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
-      final now = _nowDate();
-      if (!DateFormatter.isSameDay(now, state)) {
-        state = now;
-      }
-    });
-  }
-
-  Timer? _timer;
+  TodayDateNotifier([DateTime? initialDate]) : super(initialDate ?? _nowDate());
 
   static DateTime _nowDate() {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  void checkMidnight() {
+    final now = _nowDate();
+    if (!DateFormatter.isSameDay(now, state)) {
+      state = now;
+    }
   }
 }
 

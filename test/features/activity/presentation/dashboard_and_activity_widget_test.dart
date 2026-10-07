@@ -99,6 +99,7 @@ void main() {
         met: 8.0,
         category: 'cardio',
       ),
+      customName: 'Chạy bộ nhanh',
       durationMinutes: 30,
       caloriesBurned: 280.0,
       weightKgSnapshot: 70.0,

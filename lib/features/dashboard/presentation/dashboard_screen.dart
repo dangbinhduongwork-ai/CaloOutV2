@@ -163,6 +163,7 @@ class DashboardScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
                       Text(
                         '${CalorieFormatter.format(summary.totalKcal)} / ${CalorieFormatter.format(dailyGoal)} ${l10n.unitKcal}',
+                        key: const Key('dashboard_goal_text'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: Colors.grey.shade700,

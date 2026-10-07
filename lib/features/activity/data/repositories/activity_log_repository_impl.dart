@@ -60,13 +60,34 @@ class ActivityLogRepositoryImpl implements ActivityLogRepository {
   @override
   Stream<List<ActivityEntry>> watchEntriesInRange(
       DateTime start, DateTime end) {
+    final queryEnd = end.hour == 0 && end.minute == 0 && end.second == 0 && end.millisecond == 0
+        ? DateTime(end.year, end.month, end.day, 23, 59, 59, 999)
+        : end;
+
     final query = _db.select(_db.activityLogs)
       ..where((tbl) =>
           tbl.performedAt.isBiggerOrEqualValue(start) &
-          tbl.performedAt.isSmallerOrEqualValue(end))
+          tbl.performedAt.isSmallerOrEqualValue(queryEnd))
       ..orderBy([(tbl) => OrderingTerm.desc(tbl.performedAt)]);
 
     return query.watch().asyncMap((rows) => _mapRowsToEntries(rows));
+  }
+
+  @override
+  Future<List<ActivityEntry>> getEntriesInRange(
+      DateTime start, DateTime end) async {
+    final queryEnd = end.hour == 0 && end.minute == 0 && end.second == 0 && end.millisecond == 0
+        ? DateTime(end.year, end.month, end.day, 23, 59, 59, 999)
+        : end;
+
+    final query = _db.select(_db.activityLogs)
+      ..where((tbl) =>
+          tbl.performedAt.isBiggerOrEqualValue(start) &
+          tbl.performedAt.isSmallerOrEqualValue(queryEnd))
+      ..orderBy([(tbl) => OrderingTerm.desc(tbl.performedAt)]);
+
+    final rows = await query.get();
+    return _mapRowsToEntries(rows);
   }
 
   @override

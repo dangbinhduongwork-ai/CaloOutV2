@@ -15,6 +15,9 @@ abstract interface class ActivityLogRepository {
   /// Watches all entries performed within the given date-time range.
   Stream<List<ActivityEntry>> watchEntriesInRange(DateTime start, DateTime end);
 
+  /// Retrieves all entries performed within the given date-time range using a single query.
+  Future<List<ActivityEntry>> getEntriesInRange(DateTime start, DateTime end);
+
   /// Watches all entries performed on a specific calendar day (00:00:00 to 23:59:59.999).
   Stream<List<ActivityEntry>> watchDay(DateTime date);
 

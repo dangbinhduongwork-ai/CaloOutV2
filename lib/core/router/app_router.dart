@@ -12,7 +12,6 @@ import '../../features/settings/presentation/settings_screen.dart';
 import '../../l10n/app_localizations.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Listenable that notifies GoRouter when profileState changes.
 class _RouterRefreshNotifier extends ChangeNotifier {
@@ -61,27 +60,42 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
       ),
-      ShellRoute(
-        navigatorKey: _shellNavigatorKey,
-        builder: (context, state, child) {
-          return MainNavigationScaffold(child: child);
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainNavigationScaffold(navigationShell: navigationShell);
         },
-        routes: [
-          GoRoute(
-            path: '/dashboard',
-            builder: (context, state) => const DashboardScreen(),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/dashboard',
+                builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/history',
-            builder: (context, state) => const HistoryScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/history',
+                builder: (context, state) => const HistoryScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/profile',
-            builder: (context, state) => const ProfileScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/settings',
-            builder: (context, state) => const SettingsScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
           ),
         ],
       ),
@@ -100,50 +114,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 });
 
 /// Shell widget with bottom NavigationBar for 1-hand reachability.
+/// Uses StatefulNavigationShell to preserve tab state, scroll position, and nested stack.
 class MainNavigationScaffold extends StatelessWidget {
   const MainNavigationScaffold({
-    required this.child,
+    required this.navigationShell,
     super.key,
   });
 
-  final Widget child;
+  final StatefulNavigationShell navigationShell;
 
-  int _calculateSelectedIndex(BuildContext context) {
-    final location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith('/dashboard')) return 0;
-    if (location.startsWith('/history')) return 1;
-    if (location.startsWith('/profile')) return 2;
-    if (location.startsWith('/settings')) return 3;
-    return 0;
-  }
-
-  void _onItemTapped(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go('/dashboard');
-        break;
-      case 1:
-        context.go('/history');
-        break;
-      case 2:
-        context.go('/profile');
-        break;
-      case 3:
-        context.go('/settings');
-        break;
-    }
+  void _onItemTapped(int index) {
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final selectedIndex = _calculateSelectedIndex(context);
 
     return Scaffold(
-      body: child,
+      body: navigationShell,
       bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (index) => _onItemTapped(index, context),
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: _onItemTapped,
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.local_fire_department_outlined),

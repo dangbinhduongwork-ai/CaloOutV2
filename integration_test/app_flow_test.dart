@@ -34,7 +34,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           appDatabaseProvider.overrideWithValue(inMemoryDb),
           activityLogRepositoryProvider.overrideWithValue(logRepo),
-          todayDateProvider.overrideWithValue(DateTime(2026, 10, 7)),
+          todayDateProvider.overrideWith((ref) => TodayDateNotifier(DateTime(2026, 10, 7))),
         ],
         child: Consumer(
           builder: (context, ref, _) {

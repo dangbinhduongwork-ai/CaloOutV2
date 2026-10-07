@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
+import 'package:caloout/core/theme/app_colors.dart';
 
 /// Splash screen displayed while loading local profile data to prevent UI flickering.
 class SplashScreen extends StatelessWidget {

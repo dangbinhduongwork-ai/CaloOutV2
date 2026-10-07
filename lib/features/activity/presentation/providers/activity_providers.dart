@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/utils/date_formatter.dart';
-import '../../profile/presentation/providers/profile_provider.dart';
-import '../data/database/app_database.dart';
-import '../data/repositories/activity_catalog_repository_impl.dart';
-import '../data/repositories/activity_log_repository_impl.dart';
-import '../domain/entities/activity_entry.dart';
-import '../domain/entities/activity_type.dart';
-import '../domain/entities/daily_summary.dart';
-import '../domain/repositories/activity_catalog_repository.dart';
-import '../domain/repositories/activity_log_repository.dart';
-import '../domain/services/daily_summary_calculator.dart';
-import '../../health/domain/entities/health_sync_status.dart';
-import '../../health/presentation/providers/health_sync_providers.dart';
+import 'package:caloout/core/utils/date_formatter.dart';
+import 'package:caloout/features/profile/presentation/providers/profile_provider.dart';
+import 'package:caloout/features/activity/data/database/app_database.dart';
+import 'package:caloout/features/activity/data/repositories/activity_catalog_repository_impl.dart';
+import 'package:caloout/features/activity/data/repositories/activity_log_repository_impl.dart';
+import 'package:caloout/features/activity/domain/entities/activity_entry.dart';
+import 'package:caloout/features/activity/domain/entities/activity_type.dart';
+import 'package:caloout/features/activity/domain/entities/daily_summary.dart';
+import 'package:caloout/features/activity/domain/repositories/activity_catalog_repository.dart';
+import 'package:caloout/features/activity/domain/repositories/activity_log_repository.dart';
+import 'package:caloout/features/activity/domain/services/daily_summary_calculator.dart';
+import 'package:caloout/features/health/domain/entities/health_sync_status.dart';
+import 'package:caloout/features/health/presentation/providers/health_sync_providers.dart';
 
 /// Provider for single instance of Drift AppDatabase
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -70,7 +70,7 @@ final customActivitiesNotifierProvider = StateNotifierProvider<
 /// Provider for current calendar day date normalized to 00:00:00
 /// Automatically updates if app remains open across midnight (0h).
 class TodayDateNotifier extends StateNotifier<DateTime> {
-  TodayDateNotifier() : super(_nowDate()) {
+  TodayDateNotifier([DateTime? initialDate]) : super(initialDate ?? _nowDate()) {
     // Check every minute if midnight has passed
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       final now = _nowDate();
@@ -110,7 +110,7 @@ final todayEntriesStreamProvider =
 /// Computed provider combining user BMR, today's activity stream, and deduplicated Health data into DailySummary
 final todaySummaryProvider = Provider<DailySummary>((ref) {
   final bmr = ref.watch(currentBmrProvider) ?? 0.0;
-  final entries = ref.watch(todayEntriesStreamProvider).valueOrNull ?? [];
+  final entries = ref.watch(todayEntriesStreamProvider).valueOrNull ?? const <ActivityEntry>[];
   final healthResult = ref.watch(healthSyncResultProvider);
 
   final healthActiveKcal = (healthResult.status == HealthSyncStatus.authorized ||

@@ -157,6 +157,7 @@
   "aboutMedicalDisclaimerDesc": "CaloOut provides estimates based on standard scientific models. It is not intended as a substitute for professional medical advice, diagnosis, or nutritional prescription.",
   "languageSystem": "System Default",
   "languageVietnamese": "Tiếng Việt",
+  "languageEnglish": "English",
   "emptyStateNoActivities": "No activities recorded yet.",
   "errorGeneric": "An error occurred",
   "healthSyncTitle": "Apple Health / Health Connect Sync",

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/calorie_formatter.dart';
-import '../../../core/utils/unit_converter.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../settings/domain/entities/unit_settings.dart';
-import '../../settings/presentation/providers/unit_settings_provider.dart';
-import '../domain/entities/activity_level.dart';
-import '../domain/entities/gender.dart';
-import '../domain/entities/user_profile.dart';
-import '../domain/services/bmr_calculator.dart';
-import '../domain/services/tdee_calculator.dart';
-import '../domain/validators/profile_validator.dart';
-import 'providers/profile_provider.dart';
+import 'package:caloout/core/theme/app_colors.dart';
+import 'package:caloout/core/utils/calorie_formatter.dart';
+import 'package:caloout/core/utils/unit_converter.dart';
+import 'package:caloout/l10n/app_localizations.dart';
+import 'package:caloout/features/settings/domain/entities/unit_settings.dart';
+import 'package:caloout/features/settings/presentation/providers/unit_settings_provider.dart';
+import 'package:caloout/features/profile/domain/entities/activity_level.dart';
+import 'package:caloout/features/profile/domain/entities/gender.dart';
+import 'package:caloout/features/profile/domain/entities/user_profile.dart';
+import 'package:caloout/features/profile/domain/services/bmr_calculator.dart';
+import 'package:caloout/features/profile/domain/services/tdee_calculator.dart';
+import 'package:caloout/features/profile/domain/validators/profile_validator.dart';
+import 'package:caloout/features/profile/presentation/providers/profile_provider.dart';
 
 /// Interactive 4-step onboarding flow for new users, or profile editor for existing users.
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -60,8 +60,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       _gender = existing.gender;
       _ageController.text = existing.age.toString();
       _activityLevel = existing.activityLevel;
-      _goalController.text = existing.dailyGoalKcal.toStringAsFixed(0);
-      _isCustomGoal = true;
+      if (existing.dailyGoalKcal != null) {
+        _goalController.text = existing.dailyGoalKcal!.toStringAsFixed(0);
+        _isCustomGoal = true;
+      }
 
       final unitSettings = ref.read(unitSettingsProvider);
       _weightUnit = unitSettings.weightUnit;
@@ -74,7 +76,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       }
 
       if (_heightUnit == HeightUnit.ftIn) {
-        final ftIn = UnitConverter.cmToFtIn(existing.heightCm);
+        final ftIn = UnitConverter.cmToFeetAndInches(existing.heightCm);
         _heightFtController.text = ftIn.feet.toString();
         _heightInController.text = ftIn.inches.toStringAsFixed(0);
       } else {
@@ -259,6 +261,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     await ref.read(profileProvider.notifier).saveProfile(profile);
 
     if (widget.isEditing && mounted) {
+      final l10n = AppLocalizations.of(context);
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.profileUpdatedSuccess)),

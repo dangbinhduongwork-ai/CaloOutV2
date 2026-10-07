@@ -2,14 +2,14 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
-import '../../activity/domain/entities/activity_entry.dart';
-import '../../activity/domain/entities/activity_type.dart';
-import '../../activity/domain/services/activity_calorie_calculator.dart';
-import '../../activity/presentation/providers/activity_providers.dart';
-import '../../profile/presentation/providers/profile_provider.dart';
-import '../domain/entities/history_period_summary.dart';
-import '../domain/entities/history_range_type.dart';
-import '../domain/services/history_aggregator.dart';
+import 'package:caloout/features/activity/domain/entities/activity_entry.dart';
+import 'package:caloout/features/activity/domain/entities/activity_type.dart';
+import 'package:caloout/features/activity/domain/services/activity_calorie_calculator.dart';
+import 'package:caloout/features/activity/presentation/providers/activity_providers.dart';
+import 'package:caloout/features/profile/presentation/providers/profile_provider.dart';
+import 'package:caloout/features/history/domain/entities/history_period_summary.dart';
+import 'package:caloout/features/history/domain/entities/history_range_type.dart';
+import 'package:caloout/features/history/domain/services/history_aggregator.dart';
 
 /// Provider for selected history view type (Day, Week, Month)
 final historyRangeTypeProvider =

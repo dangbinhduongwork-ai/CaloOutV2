@@ -1,5 +1,5 @@
-import '../../activity/domain/entities/activity_entry.dart';
-import '../../activity/domain/entities/daily_summary.dart';
+import 'package:caloout/features/activity/domain/entities/activity_entry.dart';
+import 'package:caloout/features/activity/domain/entities/daily_summary.dart';
 
 /// Immutable representation of total calorie burn for a single calendar day.
 class DayBurnRecord {

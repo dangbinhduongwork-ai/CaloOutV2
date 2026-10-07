@@ -133,7 +133,7 @@ void main() {
   });
 }
 
-class _MockProfileNotifier extends AsyncNotifier<UserProfile?> {
+class _MockProfileNotifier extends ProfileNotifier {
   _MockProfileNotifier(this._profile);
   final UserProfile _profile;
 

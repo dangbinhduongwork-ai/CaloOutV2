@@ -1,8 +1,8 @@
-import '../../activity/domain/entities/activity_entry.dart';
-import '../../activity/domain/entities/daily_summary.dart';
-import '../entities/day_burn_record.dart';
-import '../entities/history_period_summary.dart';
-import '../entities/history_range_type.dart';
+import 'package:caloout/features/activity/domain/entities/activity_entry.dart';
+import 'package:caloout/features/activity/domain/entities/daily_summary.dart';
+import 'package:caloout/features/history/domain/entities/day_burn_record.dart';
+import 'package:caloout/features/history/domain/entities/history_period_summary.dart';
+import 'package:caloout/features/history/domain/entities/history_range_type.dart';
 
 /// Pure Dart aggregator for calorie burn history across date ranges.
 class HistoryAggregator {

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/theme_provider.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../activity/presentation/providers/activity_providers.dart';
-import '../../profile/presentation/onboarding_screen.dart';
-import '../../profile/presentation/providers/profile_provider.dart';
-import '../domain/entities/unit_settings.dart';
-import 'providers/unit_settings_provider.dart';
-import '../../health/domain/entities/health_sync_status.dart';
-import '../../health/presentation/providers/health_sync_providers.dart';
+import 'package:caloout/core/theme/theme_provider.dart';
+import 'package:caloout/l10n/app_localizations.dart';
+import 'package:caloout/features/activity/presentation/providers/activity_providers.dart';
+import 'package:caloout/features/profile/presentation/onboarding_screen.dart';
+import 'package:caloout/features/profile/presentation/providers/profile_provider.dart';
+import 'package:caloout/features/settings/domain/entities/unit_settings.dart';
+import 'package:caloout/features/settings/presentation/providers/unit_settings_provider.dart';
+import 'package:caloout/features/health/domain/entities/health_sync_status.dart';
+import 'package:caloout/features/health/presentation/providers/health_sync_providers.dart';
 
 /// Settings screen for managing profile, language, theme, measurement units, and data.
 class SettingsScreen extends ConsumerWidget {
@@ -165,7 +165,7 @@ class SettingsScreen extends ConsumerWidget {
                     secondary: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.12),
+                        color: Colors.red.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.favorite, color: Colors.red),
@@ -259,7 +259,7 @@ class SettingsScreen extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/calorie_formatter.dart';
-import '../../../core/utils/unit_converter.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../settings/presentation/providers/unit_settings_provider.dart';
-import 'onboarding_screen.dart';
-import 'providers/profile_provider.dart';
+import 'package:caloout/core/theme/app_colors.dart';
+import 'package:caloout/core/utils/calorie_formatter.dart';
+import 'package:caloout/core/utils/unit_converter.dart';
+import 'package:caloout/l10n/app_localizations.dart';
+import 'package:caloout/features/settings/presentation/providers/unit_settings_provider.dart';
+import 'package:caloout/features/profile/presentation/onboarding_screen.dart';
+import 'package:caloout/features/profile/presentation/providers/profile_provider.dart';
 
 /// Profile screen displaying user information, calculations, and formulas.
 class ProfileScreen extends ConsumerWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/theme_provider.dart';
-import '../../data/repositories/settings_repository_impl.dart';
-import '../../domain/entities/unit_settings.dart';
-import '../../domain/repositories/settings_repository.dart';
+import 'package:caloout/core/theme/theme_provider.dart';
+import 'package:caloout/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:caloout/features/settings/domain/entities/unit_settings.dart';
+import 'package:caloout/features/settings/domain/repositories/settings_repository.dart';
 
 /// Provider for SettingsRepository
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {

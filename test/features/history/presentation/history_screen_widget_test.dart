@@ -50,7 +50,7 @@ void main() {
         appDatabaseProvider.overrideWithValue(db),
         activityLogRepositoryProvider.overrideWithValue(logRepo),
         profileProvider.overrideWith(() => _MockProfileNotifier(sampleProfile)),
-        todayDateProvider.overrideWithValue(DateTime(2026, 10, 7)),
+        todayDateProvider.overrideWith((ref) => TodayDateNotifier(DateTime(2026, 10, 7))),
         historyAnchorDateProvider.overrideWith((ref) => DateTime(2026, 10, 7)),
         historyRangeTypeProvider.overrideWith((ref) => HistoryRangeType.week),
       ],
@@ -116,7 +116,7 @@ void main() {
     expect(find.byKey(const Key('history_period_label')), findsOneWidget);
 
     // Verify next button is disabled for current day
-    IconButton nextBtn = tester.widget<IconButton>(find.byKey(const Key('history_next_button')));
+    final nextBtn = tester.widget<IconButton>(find.byKey(const Key('history_next_button')));
     expect(nextBtn.onPressed, isNull);
 
     // Switch to Month view
@@ -166,7 +166,7 @@ void main() {
   });
 }
 
-class _MockProfileNotifier extends AsyncNotifier<UserProfile?> {
+class _MockProfileNotifier extends ProfileNotifier {
   _MockProfileNotifier(this._profile);
   final UserProfile _profile;
 

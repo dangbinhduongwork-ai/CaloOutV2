@@ -3,16 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/calorie_formatter.dart';
-import '../../../core/utils/date_formatter.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../profile/presentation/providers/profile_provider.dart';
-import '../domain/entities/activity_entry.dart';
-import '../domain/entities/activity_type.dart';
-import '../domain/services/activity_calorie_calculator.dart';
-import '../domain/validators/activity_validator.dart';
-import 'providers/activity_providers.dart';
+import 'package:caloout/core/theme/app_colors.dart';
+import 'package:caloout/core/utils/calorie_formatter.dart';
+import 'package:caloout/core/utils/date_formatter.dart';
+import 'package:caloout/l10n/app_localizations.dart';
+import 'package:caloout/features/profile/presentation/providers/profile_provider.dart';
+import 'package:caloout/features/activity/domain/entities/activity_entry.dart';
+import 'package:caloout/features/activity/domain/entities/activity_type.dart';
+import 'package:caloout/features/activity/domain/services/activity_calorie_calculator.dart';
+import 'package:caloout/features/activity/domain/validators/activity_validator.dart';
+import 'package:caloout/features/activity/presentation/providers/activity_providers.dart';
 
 /// Screen for adding or editing logged physical activities.
 class AddActivityScreen extends ConsumerStatefulWidget {

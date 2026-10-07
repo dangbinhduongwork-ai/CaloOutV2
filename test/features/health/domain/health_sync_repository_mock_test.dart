@@ -1,7 +1,6 @@
 import 'package:caloout/features/activity/domain/entities/activity_entry.dart';
 import 'package:caloout/features/activity/domain/services/daily_summary_calculator.dart';
 import 'package:caloout/features/health/domain/entities/health_burn_sample.dart';
-import 'package:caloout/features/health/domain/entities/health_sync_status.dart';
 import 'package:caloout/features/health/domain/repositories/health_sync_repository.dart';
 import 'package:caloout/features/health/domain/services/health_data_deduplicator.dart';
 import 'package:flutter_test/flutter_test.dart';

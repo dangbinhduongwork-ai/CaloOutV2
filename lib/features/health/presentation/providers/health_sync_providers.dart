@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/theme/theme_provider.dart';
-import '../../../activity/presentation/providers/activity_providers.dart';
+import 'package:caloout/core/theme/theme_provider.dart';
+import 'package:caloout/features/activity/domain/entities/activity_entry.dart';
+import 'package:caloout/features/activity/presentation/providers/activity_providers.dart';
 import '../../data/repositories/health_sync_repository_impl.dart';
 import '../../domain/entities/health_sync_result.dart';
 import '../../domain/entities/health_sync_status.dart';
@@ -122,7 +123,7 @@ class HealthSyncResultNotifier extends StateNotifier<HealthSyncResult> {
       final totalSteps = await _repo.getTotalSteps(startTime: start, endTime: end);
 
       final manualEntries =
-          _ref.read(todayEntriesStreamProvider).valueOrNull ?? [];
+          _ref.read(todayEntriesStreamProvider).valueOrNull ?? <ActivityEntry>[];
 
       // Run deduplication
       final dedup = HealthDataDeduplicator.deduplicate(

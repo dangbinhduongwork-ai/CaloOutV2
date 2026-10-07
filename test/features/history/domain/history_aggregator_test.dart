@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const bmr = 1500.0;
-  final sampleActivity = const ActivityType(
+  const sampleActivity = ActivityType(
     id: 'run',
     nameKey: 'running',
     met: 8.0,
@@ -134,7 +134,7 @@ void main() {
       expect(summary.dailyRecords[4].totalKcal, bmr);
 
       // Statistical aggregates
-      final expectedTotal = (bmr * 5) + 350.0 + 500.0;
+      const expectedTotal = (bmr * 5) + 350.0 + 500.0;
       expect(summary.totalKcal, expectedTotal);
       expect(summary.averageDailyKcal, expectedTotal / 5);
       expect(summary.highestDay?.date.day, 4);

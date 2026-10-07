@@ -3,18 +3,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/calorie_formatter.dart';
-import '../../../core/utils/date_formatter.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../activity/domain/entities/activity_entry.dart';
-import '../../activity/presentation/add_activity_screen.dart';
-import '../../activity/presentation/providers/activity_providers.dart';
-import '../../profile/presentation/providers/profile_provider.dart';
-import '../domain/entities/day_burn_record.dart';
-import '../domain/entities/history_period_summary.dart';
-import '../domain/entities/history_range_type.dart';
-import 'providers/history_providers.dart';
+import 'package:caloout/core/theme/app_colors.dart';
+import 'package:caloout/core/utils/calorie_formatter.dart';
+import 'package:caloout/core/utils/date_formatter.dart';
+import 'package:caloout/l10n/app_localizations.dart';
+import 'package:caloout/features/activity/domain/entities/activity_entry.dart';
+import 'package:caloout/features/activity/presentation/add_activity_screen.dart';
+import 'package:caloout/features/activity/presentation/providers/activity_providers.dart';
+import 'package:caloout/features/profile/presentation/providers/profile_provider.dart';
+import 'package:caloout/features/history/domain/entities/day_burn_record.dart';
+import 'package:caloout/features/history/domain/entities/history_period_summary.dart';
+import 'package:caloout/features/history/domain/entities/history_range_type.dart';
+import 'package:caloout/features/history/presentation/providers/history_providers.dart';
 
 /// History screen displaying bar charts, trends, and statistics across Day, Week, and Month.
 class HistoryScreen extends ConsumerWidget {

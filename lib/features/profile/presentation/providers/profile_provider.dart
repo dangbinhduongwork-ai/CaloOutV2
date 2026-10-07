@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/theme_provider.dart';
-import '../../data/repositories/profile_repository_impl.dart';
-import '../../domain/entities/user_profile.dart';
-import '../../domain/repositories/profile_repository.dart';
-import '../../domain/services/bmr_calculator.dart';
-import '../../domain/services/tdee_calculator.dart';
+import 'package:caloout/core/theme/theme_provider.dart';
+import 'package:caloout/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:caloout/features/profile/domain/entities/user_profile.dart';
+import 'package:caloout/features/profile/domain/repositories/profile_repository.dart';
+import 'package:caloout/features/profile/domain/services/bmr_calculator.dart';
+import 'package:caloout/features/profile/domain/services/tdee_calculator.dart';
 
 /// Provider for ProfileRepository
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {

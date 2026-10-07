@@ -157,6 +157,7 @@
   "aboutMedicalDisclaimerDesc": "CaloOut cung cấp số liệu ước lượng dựa trên các nghiên cứu khoa học phổ biến. Ứng dụng không thay thế tư vấn y khoa, chẩn đoán hoặc phác đồ điều trị của bác sĩ và chuyên gia dinh dưỡng.",
   "languageSystem": "Theo hệ thống",
   "languageVietnamese": "Tiếng Việt",
+  "languageEnglish": "Tiếng Anh",
   "emptyStateNoActivities": "Chưa có hoạt động nào được ghi.",
   "errorGeneric": "Đã có lỗi xảy ra",
   "healthSyncTitle": "Đồng bộ Apple Health / Health Connect",

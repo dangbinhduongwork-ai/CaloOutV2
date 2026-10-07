@@ -1,4 +1,4 @@
-import '../../activity/domain/entities/daily_summary.dart';
+import 'package:caloout/features/activity/domain/entities/daily_summary.dart';
 import 'day_burn_record.dart';
 import 'history_range_type.dart';
 

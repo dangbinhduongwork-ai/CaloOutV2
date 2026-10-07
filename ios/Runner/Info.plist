@@ -40,5 +40,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>CaloOut cần quyền đọc dữ liệu calo vận động và số bước chân từ Apple Health để tự động tính tổng calo tiêu hao mỗi ngày của bạn. (CaloOut requires read access to your active energy and step count from Apple Health to calculate your daily calories burned.)</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>CaloOut không ghi dữ liệu lên Apple Health. Ứng dụng chỉ đọc dữ liệu calo và số bước chân. (CaloOut does not write data to Apple Health. The app only reads active energy and steps.)</string>
 </dict>
 </plist>

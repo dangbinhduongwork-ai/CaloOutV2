@@ -8,6 +8,8 @@ import '../../profile/presentation/onboarding_screen.dart';
 import '../../profile/presentation/providers/profile_provider.dart';
 import '../domain/entities/unit_settings.dart';
 import 'providers/unit_settings_provider.dart';
+import '../../health/domain/entities/health_sync_status.dart';
+import '../../health/presentation/providers/health_sync_providers.dart';
 
 /// Settings screen for managing profile, language, theme, measurement units, and data.
 class SettingsScreen extends ConsumerWidget {
@@ -145,6 +147,141 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Health Data Sync Card (Default: OFF)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SwitchListTile(
+                    key: const Key('settings_health_sync_switch'),
+                    title: Text(l10n.healthSyncTitle),
+                    subtitle: Text(l10n.healthSyncSubtitle),
+                    secondary: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.favorite, color: Colors.red),
+                    ),
+                    value: ref.watch(healthSyncEnabledProvider),
+                    onChanged: (val) async {
+                      final result = await ref
+                          .read(healthSyncEnabledProvider.notifier)
+                          .toggleEnabled(val);
+
+                      if (!context.mounted) return;
+
+                      if (!result.success) {
+                        final msg = switch (result.status) {
+                          HealthSyncStatus.permissionDenied =>
+                            l10n.healthSyncStatusPermissionDenied,
+                          HealthSyncStatus.notSupported =>
+                            l10n.healthSyncStatusNotSupported,
+                          HealthSyncStatus.readError =>
+                            l10n.healthSyncStatusReadError,
+                          _ => l10n.errorGeneric,
+                        };
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(msg),
+                            backgroundColor: Colors.red.shade700,
+                            duration: const Duration(seconds: 4),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  if (ref.watch(healthSyncEnabledProvider)) ...[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            switch (ref.watch(healthSyncStatusProvider)) {
+                              HealthSyncStatus.syncing => Icons.sync,
+                              HealthSyncStatus.authorized => Icons.check_circle_outline,
+                              HealthSyncStatus.noData => Icons.info_outline,
+                              HealthSyncStatus.permissionRevoked => Icons.warning_amber_rounded,
+                              _ => Icons.error_outline,
+                            },
+                            size: 16,
+                            color: switch (ref.watch(healthSyncStatusProvider)) {
+                              HealthSyncStatus.authorized => Colors.green,
+                              HealthSyncStatus.syncing => Colors.blue,
+                              HealthSyncStatus.noData => Colors.blueGrey,
+                              _ => Colors.orange,
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              switch (ref.watch(healthSyncStatusProvider)) {
+                                HealthSyncStatus.syncing => l10n.healthSyncStatusSyncing,
+                                HealthSyncStatus.authorized =>
+                                  '${l10n.healthSyncStatusAuthorized} (${ref.watch(healthSyncRepositoryProvider).platformSourceName})',
+                                HealthSyncStatus.noData => l10n.healthSyncStatusNoData,
+                                HealthSyncStatus.permissionRevoked =>
+                                  l10n.healthSyncStatusPermissionRevoked,
+                                HealthSyncStatus.permissionDenied =>
+                                  l10n.healthSyncStatusPermissionDenied,
+                                HealthSyncStatus.notSupported =>
+                                  l10n.healthSyncStatusNotSupported,
+                                _ => l10n.healthSyncStatusReadError,
+                              },
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.refresh, size: 18),
+                            tooltip: 'Sync now',
+                            onPressed: () {
+                              ref.read(healthSyncResultProvider.notifier).sync();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  // Privacy Commitment Box
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.security, size: 18, color: Colors.teal),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              l10n.healthSyncPrivacyNotice,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey.shade700,
+                                    height: 1.35,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 16),

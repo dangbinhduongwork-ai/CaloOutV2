@@ -10,6 +10,9 @@ import '../../activity/domain/entities/activity_entry.dart';
 import '../../activity/presentation/add_activity_screen.dart';
 import '../../activity/presentation/providers/activity_providers.dart';
 import '../../profile/presentation/providers/profile_provider.dart';
+import '../../health/domain/entities/health_sync_result.dart';
+import '../../health/domain/entities/health_sync_status.dart';
+import '../../health/presentation/providers/health_sync_providers.dart';
 
 /// Dashboard screen showing Today's Calorie Burn progress ring and activity logs.
 class DashboardScreen extends ConsumerWidget {
@@ -23,6 +26,12 @@ class DashboardScreen extends ConsumerWidget {
     final dailyGoal = ref.watch(currentDailyGoalProvider) ?? 2000.0;
     final entriesAsync = ref.watch(todayEntriesStreamProvider);
     final today = ref.watch(todayDateProvider);
+    final healthSyncEnabled = ref.watch(healthSyncEnabledProvider);
+    final healthResult = ref.watch(healthSyncResultProvider);
+    final hasHealthData = healthSyncEnabled &&
+        (healthResult.status == HealthSyncStatus.authorized ||
+            healthResult.status == HealthSyncStatus.noData) &&
+        (healthResult.deduplicatedCalories > 0 || healthResult.totalSteps > 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -185,7 +194,7 @@ class DashboardScreen extends ConsumerWidget {
                       icon: Icons.directions_run,
                       color: AppColors.calorieOrange,
                       title: l10n.dashboardActivePortion,
-                      value: CalorieFormatter.format(summary.activityKcal),
+                      value: CalorieFormatter.format(summary.activityKcal + summary.healthActiveKcal),
                       unit: l10n.unitKcal,
                     ),
                   ),
@@ -198,12 +207,12 @@ class DashboardScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${l10n.dashboardActivitiesLogged} (${entries.length})',
+                    '${l10n.dashboardActivitiesLogged} (${entries.length + (hasHealthData ? 1 : 0)})',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  if (entries.isNotEmpty)
+                  if (entries.isNotEmpty || hasHealthData)
                     TextButton.icon(
                       icon: const Icon(Icons.add, size: 18),
                       label: Text(l10n.dashboardAddActivity),
@@ -213,10 +222,16 @@ class DashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
 
+              // Dedicated Health Sync Tile (Apple Health / Health Connect)
+              if (hasHealthData) ...[
+                _buildHealthSyncTile(context, healthResult, l10n),
+                const SizedBox(height: 8),
+              ],
+
               // Today's Activity List or Friendly Empty State
-              if (entries.isEmpty)
+              if (entries.isEmpty && !hasHealthData)
                 _buildEmptyStateCard(context, l10n)
-              else
+              else if (entries.isNotEmpty)
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -237,6 +252,134 @@ class DashboardScreen extends ConsumerWidget {
         tooltip: l10n.dashboardAddActivity,
         onPressed: () => _openAddActivity(context),
         child: const Icon(Icons.add, size: 28),
+      ),
+    );
+  }
+
+  Widget _buildHealthSyncTile(
+    BuildContext context,
+    HealthSyncResult result,
+    AppLocalizations l10n,
+  ) {
+    final isApple = result.platformSourceName.toLowerCase().contains('apple');
+    final accentColor = isApple ? const Color(0xFFFF2D55) : const Color(0xFF00897B);
+
+    return Card(
+      key: const Key('dashboard_health_sync_tile'),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: accentColor.withOpacity(0.35),
+          width: 1.2,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: accentColor.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.favorite_rounded,
+                    color: accentColor,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            result.platformSourceName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: accentColor.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'SYNC',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: accentColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        l10n.healthSyncActivitySubtitle(result.totalSteps),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey.shade600,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '+${CalorieFormatter.format(result.deduplicatedCalories)}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                    ),
+                    Text(
+                      l10n.unitKcal,
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (result.overlappingCaloriesIgnored > 0) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.shield_outlined, size: 14, color: Colors.amber),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        l10n.healthSyncExcludedNote(
+                          result.overlappingSamples.length,
+                          result.overlappingCaloriesIgnored,
+                        ),
+                        style: const TextStyle(fontSize: 11, color: Colors.brown),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

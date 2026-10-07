@@ -196,6 +196,23 @@ abstract class AppLocalizations {
   String get languageEnglish;
   String get emptyStateNoActivities;
   String get errorGeneric;
+  String get healthSyncTitle;
+  String get healthSyncSubtitle;
+  String get healthSyncPrivacyNotice;
+  String get healthSyncStatusSyncing;
+  String get healthSyncStatusAuthorized;
+  String get healthSyncStatusPermissionDenied;
+  String get healthSyncStatusPermissionRevoked;
+  String get healthSyncStatusNotSupported;
+  String get healthSyncStatusNoData;
+  String get healthSyncStatusReadError;
+  String get healthSyncSourceAppleHealth;
+  String get healthSyncSourceHealthConnect;
+  String get healthSyncActivityTitle;
+  String healthSyncActivitySubtitle(int steps);
+  String healthSyncExcludedNote(int count, double kcal);
+  String get healthSyncActionInstall;
+  String get healthSyncActionOpenSettings;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -526,6 +543,40 @@ class _AppLocalizationsVi extends AppLocalizations {
   String get emptyStateNoActivities => 'Chưa có hoạt động nào được ghi.';
   @override
   String get errorGeneric => 'Đã có lỗi xảy ra';
+  @override
+  String get healthSyncTitle => 'Đồng bộ Apple Health / Health Connect';
+  @override
+  String get healthSyncSubtitle => 'Đọc calo vận động và số bước chân';
+  @override
+  String get healthSyncPrivacyNotice => 'Cam kết quyền riêng tư: Dữ liệu vận động và bước chân chỉ được đọc và xử lý trên thiết bị của bạn. CaloOut tuyệt đối không tải hay chia sẻ dữ liệu lên bất kỳ máy chủ nào.';
+  @override
+  String get healthSyncStatusSyncing => 'Đang đồng bộ dữ liệu...';
+  @override
+  String get healthSyncStatusAuthorized => 'Đã kết nối và đồng bộ';
+  @override
+  String get healthSyncStatusPermissionDenied => 'Quyền truy cập dữ liệu sức khỏe bị từ chối. Vui lòng cấp quyền trong Cài đặt thiết bị.';
+  @override
+  String get healthSyncStatusPermissionRevoked => 'Quyền truy cập đã bị thu hồi. Vui lòng cấp lại quyền để tiếp tục đồng bộ.';
+  @override
+  String get healthSyncStatusNotSupported => 'Thiết bị không hỗ trợ hoặc chưa cài đặt ứng dụng Health Connect. Vui lòng cài đặt từ Google Play Store.';
+  @override
+  String get healthSyncStatusNoData => 'Chưa có dữ liệu vận động mới từ Apple Health / Health Connect hôm nay.';
+  @override
+  String get healthSyncStatusReadError => 'Không thể đọc dữ liệu sức khỏe do lỗi hệ thống. Vui lòng thử lại sau.';
+  @override
+  String get healthSyncSourceAppleHealth => 'Apple Health';
+  @override
+  String get healthSyncSourceHealthConnect => 'Health Connect';
+  @override
+  String get healthSyncActivityTitle => 'Hoạt động & Bước chân';
+  @override
+  String healthSyncActivitySubtitle(int steps) => '$steps bước • Tự động loại trừ giờ tập nhập tay';
+  @override
+  String healthSyncExcludedNote(int count, double kcal) => 'Đã loại trừ $count mẫu (${kcal.toStringAsFixed(0)} kcal) trùng với giờ tập đã nhập tay';
+  @override
+  String get healthSyncActionInstall => 'Cài đặt Health Connect';
+  @override
+  String get healthSyncActionOpenSettings => 'Mở Cài đặt';
 }
 
 class _AppLocalizationsEn extends AppLocalizations {
@@ -835,4 +886,38 @@ class _AppLocalizationsEn extends AppLocalizations {
   String get emptyStateNoActivities => 'No activities recorded yet.';
   @override
   String get errorGeneric => 'An error occurred';
+  @override
+  String get healthSyncTitle => 'Apple Health / Health Connect Sync';
+  @override
+  String get healthSyncSubtitle => 'Read active energy and step count';
+  @override
+  String get healthSyncPrivacyNotice => 'Privacy Commitment: Health and step data is read and processed strictly on your device. CaloOut never uploads or shares your health data with any external servers.';
+  @override
+  String get healthSyncStatusSyncing => 'Syncing health data...';
+  @override
+  String get healthSyncStatusAuthorized => 'Connected and synchronized';
+  @override
+  String get healthSyncStatusPermissionDenied => 'Health data access permission was denied. Please grant permission in device Settings.';
+  @override
+  String get healthSyncStatusPermissionRevoked => 'Health data access permission was revoked. Please grant permission again in system settings.';
+  @override
+  String get healthSyncStatusNotSupported => 'Device does not support Health services or Health Connect is not installed. Please install Health Connect from Google Play Store.';
+  @override
+  String get healthSyncStatusNoData => 'No new activity data found in Apple Health / Health Connect today.';
+  @override
+  String get healthSyncStatusReadError => 'Unable to read health data due to a system error. Please try again later.';
+  @override
+  String get healthSyncSourceAppleHealth => 'Apple Health';
+  @override
+  String get healthSyncSourceHealthConnect => 'Health Connect';
+  @override
+  String get healthSyncActivityTitle => 'Activity & Steps';
+  @override
+  String healthSyncActivitySubtitle(int steps) => '$steps steps • Excludes manual workout hours';
+  @override
+  String healthSyncExcludedNote(int count, double kcal) => 'Excluded $count samples (${kcal.toStringAsFixed(0)} kcal) overlapping with manual workouts';
+  @override
+  String get healthSyncActionInstall => 'Install Health Connect';
+  @override
+  String get healthSyncActionOpenSettings => 'Open Settings';
 }

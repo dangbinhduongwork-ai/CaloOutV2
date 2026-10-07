@@ -11,6 +11,8 @@ import '../domain/entities/daily_summary.dart';
 import '../domain/repositories/activity_catalog_repository.dart';
 import '../domain/repositories/activity_log_repository.dart';
 import '../domain/services/daily_summary_calculator.dart';
+import '../../health/domain/entities/health_sync_status.dart';
+import '../../health/presentation/providers/health_sync_providers.dart';
 
 /// Provider for single instance of Drift AppDatabase
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -105,9 +107,25 @@ final todayEntriesStreamProvider =
   return repo.watchDay(today);
 });
 
-/// Computed provider combining user BMR and today's activity stream into DailySummary
+/// Computed provider combining user BMR, today's activity stream, and deduplicated Health data into DailySummary
 final todaySummaryProvider = Provider<DailySummary>((ref) {
   final bmr = ref.watch(currentBmrProvider) ?? 0.0;
   final entries = ref.watch(todayEntriesStreamProvider).valueOrNull ?? [];
-  return DailySummaryCalculator.calculate(bmr: bmr, entries: entries);
+  final healthResult = ref.watch(healthSyncResultProvider);
+
+  final healthActiveKcal = (healthResult.status == HealthSyncStatus.authorized ||
+          healthResult.status == HealthSyncStatus.noData)
+      ? healthResult.deduplicatedCalories
+      : 0.0;
+  final healthSteps = (healthResult.status == HealthSyncStatus.authorized ||
+          healthResult.status == HealthSyncStatus.noData)
+      ? healthResult.totalSteps
+      : 0;
+
+  return DailySummaryCalculator.calculate(
+    bmr: bmr,
+    entries: entries,
+    healthActiveKcal: healthActiveKcal,
+    healthSteps: healthSteps,
+  );
 });

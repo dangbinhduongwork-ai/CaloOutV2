@@ -156,3 +156,52 @@ Chỉ số MET (Metabolic Equivalent of Task) được tham chiếu theo nghiên
 1. **Chỉ theo dõi Calories Out**: Ứng dụng được thiết kế chuyên biệt cho năng lượng tiêu hao, không theo dõi calo nạp vào từ ăn uống (Calories In) hay macro dinh dưỡng.
 2. **Lưu trữ hoàn toàn cục bộ**: Ứng dụng không sử dụng tài khoản đám mây hay đồng bộ đa thiết bị; người dùng nên lưu ý khi đổi máy hoặc xóa dữ liệu ứng dụng.
 3. **BMR không lưu nhật ký cân nặng hàng ngày**: BMR các ngày quá khứ hiển thị theo cân nặng hồ sơ hiện tại thay vì một đồ thị biến thiên cân nặng mỗi ngày.
+
+---
+
+## 🩺 Đồng Bộ Dữ Liệu Sức Khỏe (Apple Health & Health Connect)
+
+CaloOut hỗ trợ đồng bộ dữ liệu calo vận động nền và số bước chân tự động từ **Apple Health** (trên iOS) và **Health Connect** (trên Android).
+
+### 1. Nguyên Tắc Thiết Kế & Quyền Riêng Tư
+- **Mặc định TẮT**: Tính năng hoàn toàn là tùy chọn, người dùng chủ động bật trong **Cài đặt**.
+- **Chỉ ĐỌC (READ-ONLY)**: Ứng dụng chỉ xin quyền đọc `STEPS` và `ACTIVE_ENERGY_BURNED`. Tuyệt đối **không ghi đè hay sửa đổi** dữ liệu trong kho Apple Health / Health Connect.
+- **Bảo mật tuyệt đối trên thiết bị**: Dữ liệu đọc về chỉ được xử lý tạm thời và lưu trữ cục bộ trên máy. Không bao giờ tải lên bất kỳ máy chủ nào.
+- **Giao diện phân định minh bạch**: Calo từ Health hiển thị thành một dòng riêng biệt mang nhãn `"Apple Health"` hoặc `"Health Connect"` kèm huy hiệu `SYNC`, phân biệt rõ ràng với các bài tập nhập tay.
+
+### 2. Thuật Toán Chống Tính Trùng (De-duplication Algorithm)
+Để tránh cộng dồn hai lần lượng calo vận động (ví dụ: người dùng vừa đeo Apple Watch chạy bộ, vừa nhập tay bài chạy bộ trong CaloOut):
+1. **Giả định chân lý (Ground Truth)**: Bài tập người dùng nhập tay có thời gian và chỉ số MET xác định cụ thể được ưu tiên là nguồn chính xác nhất.
+2. **Khoảng thời gian bài tập nhập tay**: Mỗi hoạt động nhập tay xác định một khung giờ `[performedAt, performedAt + durationMinutes]`.
+3. **Quy tắc loại trừ giao cắt (Interval Intersection)**:
+   Mọi mẫu calo vận động $S$ từ Health có khoảng `[dateFrom, dateTo]` thỏa mãn:
+   $$\text{dateFrom} < \text{manualEnd} \quad \text{và} \quad \text{dateTo} > \text{manualStart}$$
+   sẽ bị **loại trừ hoàn toàn** khỏi tổng calo Health (`overlappingCaloriesIgnored`).
+4. **Calo nền hợp lệ**: Chỉ những mẫu năng lượng phát sinh ngoài các khung giờ tập luyện thủ công (đi bộ dạo mát, lên xuống cầu thang, di chuyển thường ngày) mới được tính vào `healthActiveKcal`.
+5. **Công thức tổng hợp**:
+   $$\text{Total Daily Burn} = \text{BMR} + \sum \text{Manual Entries Kcal} + \text{Health Active Kcal}$$
+
+### 3. Hướng Dẫn Cấu Hình Thủ Công Trong Xcode & Android Studio
+
+#### A. Cấu hình Xcode (iOS)
+*(Thực hiện khi mở dự án trên máy Mac)*
+1. Mở file `ios/Runner.xcworkspace` trong **Xcode**.
+2. Chọn target **Runner** trong danh sách Targets ở khung bên trái.
+3. Chuyển sang tab **Signing & Capabilities**.
+4. Nhấn nút **+ Capability** ở góc trên bên trái.
+5. Tìm kiếm từ khóa **HealthKit** và nhấp đúp để thêm vào.
+6. Trong mục HealthKit vừa thêm:
+   - Tùy chọn *Clinical Health Records*: **Bỏ chọn** (CaloOut không yêu cầu hồ sơ bệnh án).
+   - Tùy chọn *Background Delivery*: Tùy chọn nếu muốn nhận cập nhật nền.
+7. Kiểm tra mục **Info**: Đảm bảo hai khóa sau đã xuất hiện (đã được cấu hình sẵn trong `Info.plist`):
+   - `Privacy - Health Share Usage Description` (`NSHealthShareUsageDescription`)
+   - `Privacy - Health Update Usage Description` (`NSHealthUpdateUsageDescription`)
+
+#### B. Cấu hình Android Studio (Android)
+1. Mở thư mục dự án trong **Android Studio**.
+2. Kiểm tra `android/app/build.gradle`: `minSdkVersion` đã được đặt thành **26** (Health Connect bắt buộc API 26+).
+3. Kiểm tra `MainActivity.kt`: Kế thừa `FlutterFragmentActivity` để hiển thị hộp thoại cấp quyền Health Connect.
+4. Kiểm tra `AndroidManifest.xml`: Đã chứa đầy đủ 2 quyền `READ_STEPS`, `READ_ACTIVE_CALORIES_BURNED`, thẻ `<queries>` gói `com.google.android.apps.healthdata`, và `intent-filter` rationale.
+5. **Đối với thiết bị thật Android 14+**: Health Connect được tích hợp sẵn trong hệ thống (`Cài đặt -> Bảo mật & Quyền riêng tư -> Health Connect`).
+6. **Đối với thiết bị thật Android 9 - 13**: Thiết bị cần cài đặt ứng dụng **Health Connect** chính thức của Google từ Google Play Store trước khi bật tính năng.
+

@@ -30,6 +30,9 @@ dependencies:
   # Charts
   fl_chart: ^0.68.0
 
+  # Health Integration
+  health: ^13.0.0
+
   # Utilities
   uuid: ^4.4.0
 
